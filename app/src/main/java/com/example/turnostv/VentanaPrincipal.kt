@@ -6,6 +6,7 @@ import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.turnostv.model.Multimedia
+import com.example.turnostv.model.TextoGuardado
 import com.example.turnostv.network.ApiClient
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -15,16 +16,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class VentanaPrincipal : AppCompatActivity() {
-
     private lateinit var videoView: VideoView
     private lateinit var txtHora: TextView
     private lateinit var txtFecha: TextView
-
+    private lateinit var carruselText: TextView
+    private var currentTexto: String? = null
     private var currentVideoUrl: String? = null
     private var multimediaActual: Multimedia? = null
-
     private val handler = Handler(Looper.getMainLooper())
-
     private val relojRunnable = object : Runnable {
         override fun run() {
             val horaActual =
@@ -49,10 +48,12 @@ class VentanaPrincipal : AppCompatActivity() {
         videoView = findViewById(R.id.videoView)
         txtHora = findViewById(R.id.txtHora)
         txtFecha = findViewById(R.id.txtFecha)
+        carruselText = findViewById(R.id.carruselText)
 
         handler.post(relojRunnable)
 
         iniciarVerificacionVideo()
+        iniciarTextoCarrusel()
     }
 
     private fun iniciarVerificacionVideo() {
@@ -113,6 +114,34 @@ class VentanaPrincipal : AppCompatActivity() {
         videoView.setOnErrorListener { _, what, extra ->
             println("ERROR VIDEO: $what - $extra")
             true
+        }
+    }
+
+    private fun iniciarTextoCarrusel() {
+
+        lifecycleScope.launch {
+
+            while (true) {
+
+                try {
+
+                    val texto: TextoGuardado =
+                        ApiClient.client.get("${ApiClient.BASE_URL}/textos/activo").body()
+
+                    if (currentTexto != texto.texto) {
+
+                        currentTexto = texto.texto
+                        carruselText.text = texto.texto
+
+                        carruselText.isSelected = true // 🔥 activa marquee
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                delay(5000)
+            }
         }
     }
 }
