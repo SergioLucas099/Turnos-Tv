@@ -113,9 +113,9 @@ class VentanaPrincipal : AppCompatActivity() {
             while (true) {
 
                 try {
-
+                    val baseUrl = ApiClient.getBaseUrl(this@VentanaPrincipal)
                     val response = ApiClient.client.get(
-                        "${ApiClient.BASE_URL}/multimedia/activo"
+                        "${baseUrl}/multimedia/activo"
                     )
 
                     println("STATUS: ${response.status}")
@@ -125,7 +125,7 @@ class VentanaPrincipal : AppCompatActivity() {
                     println("VIDEO URL: ${multimediaActual?.url}")
 
                     val fullUrl =
-                        "${ApiClient.BASE_URL}/${multimediaActual?.url}"
+                        "${baseUrl}/${multimediaActual?.url}"
 
                     if (multimediaActual?.tipo == "VIDEO") {
 
@@ -194,9 +194,9 @@ class VentanaPrincipal : AppCompatActivity() {
         lifecycleScope.launch {
 
             try {
-
+                val baseUrl = ApiClient.getBaseUrl(this@VentanaPrincipal)
                 val lista: List<Turnos> =
-                    ApiClient.client.get("${ApiClient.BASE_URL}/turnos").body()
+                    ApiClient.client.get("${baseUrl}/turnos").body()
 
                 // 🔥 1. FILTRAR APROBADOS (lado derecho)
                 val aprobados = lista.filter { it.estado == "APROBADO" }
@@ -243,9 +243,9 @@ class VentanaPrincipal : AppCompatActivity() {
             while (true) {
 
                 try {
-
+                    val baseUrl = ApiClient.getBaseUrl(this@VentanaPrincipal)
                     val texto: TextoGuardado =
-                        ApiClient.client.get("${ApiClient.BASE_URL}/textos/activo").body()
+                        ApiClient.client.get("${baseUrl}/textos/activo").body()
 
                     if (currentTexto != texto.texto) {
 
